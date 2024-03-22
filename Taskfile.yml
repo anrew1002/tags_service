@@ -1,0 +1,21 @@
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - go build -v ./cmd/server/
+  # rebuild:
+  #   cmds:
+  #     - docker-compose build --no-cache
+  #     - docker-compose up
+  # migrate:
+  #   cmds:
+  #     - goose -dir migrations up
+  # dbuild:
+  #   cmds:
+  #     - docker-compose build
+  #     - docker-compose up
+  # clear:
+  #   cmds:
+  #     - docker-compose down -v
+  #     - docker image prune
