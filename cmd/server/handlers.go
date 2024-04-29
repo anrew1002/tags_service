@@ -47,7 +47,7 @@ func TagsPostHandler(
 
 		reqToken = strings.TrimSpace(splitToken[1])
 		log.Info(reqToken)
-		_, err := storage.GetApiKey(reqToken)
+		key, err := storage.GetApiKey(reqToken)
 
 		if err != nil {
 			log.Error(op+"bad token", sl.Err(err))
@@ -62,6 +62,10 @@ func TagsPostHandler(
 		tag, err = storage.GetTag(tag)
 		if err != nil {
 			log.Error(op+"err decode body", sl.Err(err))
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		}
+		if err = storage.SetLogs(key.Login, tag.Alias); err != nil {
+			log.Error(op+"err loging activity", sl.Err(err))
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		}
 		encode(w, r, 200, tag)

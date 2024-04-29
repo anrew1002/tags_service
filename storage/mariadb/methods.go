@@ -43,6 +43,15 @@ func (s *Storage) SetApiKey(login string, token string) error {
 	return err
 }
 
+func (s *Storage) SetLogs(login string, alias string) error {
+	_, err := s.DB.NamedExec(`INSERT INTO logs (alias,login) VALUES (:login,:alias)`,
+		map[string]interface{}{
+			"login": login,
+			"alias": alias,
+		})
+	return err
+}
+
 // func (s *Storage) GetTag() string {
 // 	stmt := `SELECT id,name FROM users`
 

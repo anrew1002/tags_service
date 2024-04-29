@@ -1,0 +1,56 @@
+version: '3'
+
+networks:
+  asupd:
+    external: true
+volumes:
+  mariadbvol:
+
+
+services:
+  # app:
+  #   container_name: cms-container
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "1090:1090"
+  #   # restart: unless-stopped
+  #   depends_on:
+  #     - migrate
+  #   environment:
+  #     CMS_PASSWORD: ${CMS_PASSWORD}
+  #   networks:
+  #     - asupd
+  migrate:
+    image: migrate/migrate
+    volumes:
+        - ./migrations:/migrations
+    command: ["-database", "mysql://cms_app:cms@tcp(cms-mariadb:3306)/cms_dev", "-path", "/migrations", "up"]
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - asupd
+    tty: true
+  mariadb:
+    container_name: cms-mariadb
+    image: "mariadb:11.2"
+    restart: unless-stopped
+    networks:
+      - asupd
+    environment:
+      MARIADB_DATABASE: cms_dev
+      MARIADB_USER: cms_app
+      MARIADB_PASSWORD: ${CMS_PASSWORD}
+      MARIADB_RANDOM_ROOT_PASSWORD: 1
+    volumes:
+      - mariadbvol:/var/lib/mysql
+      - ./data:/data
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      start_interval: 10s
+      interval: 1m
+      timeout: 5s
+      retries: 3
