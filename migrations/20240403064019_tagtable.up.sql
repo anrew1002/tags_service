@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS tags(
+    id     VARCHAR(255)  PRIMARY KEY,
+    alias VARCHAR(255) NOT NULL,
+    pass    VARCHAR(255)    NOT NULL
+);
+CREATE TABLE IF NOT EXISTS apikeys(
+    login     VARCHAR(255)  PRIMARY KEY,
+    apikey    VARCHAR(255) UNIQUE   NOT NULL
+);

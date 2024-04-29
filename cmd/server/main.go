@@ -12,16 +12,18 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"isustud.com/m/internal/config"
+	"isustud.com/m/storage/mariadb"
 )
 
-func NewRouter(logger *slog.Logger) chi.Router {
+func NewRouter(logger *slog.Logger, storage *mariadb.Storage) chi.Router {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	addRoutes(r, logger)
+	addRoutes(r, logger, storage)
 
 	return r
 
@@ -41,11 +43,15 @@ func run(ctx context.Context) error {
 	addr := flag.String("addr", ":1090", "HTTP network address")
 	flag.Parse()
 
+	cfg := config.MustLoad()
+	storage := new(mariadb.Storage)
+	storage.DB = mariadb.New(*cfg)
+
 	log := slog.New(
 		slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
 	)
 
-	router := NewRouter(log)
+	router := NewRouter(log, storage)
 
 	httpServer := &http.Server{
 		Addr:    *addr,
