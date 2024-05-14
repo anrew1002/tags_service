@@ -16,7 +16,7 @@ func New(cfg config.Config) *sqlx.DB {
 	user := "tag_service"
 	dbName := "tag_service"
 
-	connectionString := fmt.Sprintf("%s:%s@/%s?charset=utf8mb4&collation=utf8mb4_unicode_ci", user, cfg.DBPassword, dbName)
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&collation=utf8mb4_unicode_ci", user, cfg.DBPassword, cfg.DBHost, dbName)
 	fmt.Println(connectionString)
 	db, err := sqlx.Open("mysql", connectionString)
 	if err != nil {

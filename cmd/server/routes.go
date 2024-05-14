@@ -13,7 +13,6 @@ func addRoutes(
 	storage *mariadb.Storage,
 ) {
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Get("/tags", TagsGetHandler(logger))
 		r.Post("/tags", TagsPostHandler(logger, storage))
 		r.Get("/apikeys/{login}", KeyGetHandler(logger, storage))
 	})

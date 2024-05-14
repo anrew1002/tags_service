@@ -82,11 +82,13 @@ func KeyGetHandler(
 		token, err := GenerateRandomStringURLSafe(32)
 		if err != nil {
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+			return
 		}
 		err = storage.SetApiKey(login, token)
 		if err != nil {
-			if errors.Is(err, &mariadb.ErrDuplicate{}) {
+			if errors.Is(err, mariadb.ErrDuplicate) {
 				http.Error(w, "Имя уже занято", http.StatusConflict)
+				return
 			}
 			fmt.Printf("%T\n", err)
 			log.Error(op+"err db", sl.Err(err))

@@ -1,3 +1,4 @@
+
 FROM golang:alpine AS builder
 
 WORKDIR /build
@@ -15,6 +16,11 @@ EXPOSE 1090
 
 WORKDIR /build
 
+ADD .env /build
+
 COPY --from=builder /build/server /build/server
 
 CMD ["./server"]
+
+
+

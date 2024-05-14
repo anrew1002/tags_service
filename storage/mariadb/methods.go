@@ -1,6 +1,7 @@
 package mariadb
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/go-sql-driver/mysql"
@@ -11,13 +12,17 @@ import (
 type Storage struct {
 	DB *sqlx.DB
 }
-type ErrDuplicate struct {
-	E string
-}
 
-func (e *ErrDuplicate) Error() string {
-	return fmt.Sprintf("%s not found", e.E)
-}
+// type ErrDuplicate struct {
+// 	Item string
+// }
+
+//	func (e *ErrDuplicate) Error() string {
+//		return fmt.Sprintf("%s not found", e.Item)
+//	}
+var (
+	ErrDuplicate = errors.New("connection error")
+)
 
 func (s *Storage) GetTag(tag models.Tag) (models.Tag, error) {
 	var tagDB models.Tag
@@ -36,8 +41,9 @@ func (s *Storage) SetApiKey(login string, token string) error {
 			"token": token,
 		})
 	if mysqlError, ok := err.(*mysql.MySQLError); ok {
+		fmt.Println(err.Error())
 		if mysqlError.Number == 1062 {
-			return &ErrDuplicate{E: "Имя уже занято"}
+			return fmt.Errorf("failed to add user: %w", ErrDuplicate)
 		}
 	}
 	return err
