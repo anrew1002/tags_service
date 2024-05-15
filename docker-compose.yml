@@ -4,6 +4,8 @@ networks:
   asupd:
 volumes:
   mariadbvol:
+  caddy_data:
+  caddy_config:
 
 
 services:
@@ -50,3 +52,26 @@ services:
       interval: 1m
       timeout: 5s
       retries: 3
+  caddy:
+    image: caddy:2.7.6-alpine
+    restart: unless-stopped
+    networks:
+      - asupd
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: tag-mariadb
+    restart: always
+    ports:
+      - 7777:8080
+
+
+
