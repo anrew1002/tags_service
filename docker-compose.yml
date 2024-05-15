@@ -67,6 +67,8 @@ services:
   adminer:
     image: adminer:latest
     container_name: adminer
+    networks:
+      - asupd
     environment:
       ADMINER_DEFAULT_SERVER: tag-mariadb
     restart: always
